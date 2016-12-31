@@ -30,7 +30,7 @@ Options:
     --content=<path/to/file>    The body of the post, in a valid, semantic, HTML fragment, or Markdown (required)
     --format=<string>           The format of the "content" field (markdown|html) (required)
     --help                      Display the help text
-    --license=<string>          The license of the post (all-rights-reserved|cc-40-by|cc-40-by-sa|cc-40-by-nd|cc-40-by-nc|cc-40-by-nc-nd|cc-40-by-nc-sa|cc-40-zero|public-domain)
+    --license=<string>          The license of the post (all-rights-reserved|cc-40-by|public-domain|...)
     --notify                    Whether to notify followers that the post was published
     --status=<string>           The status of the post (public|draft|unlisted)
     --tags=<string|array>       Tags to classify the post
@@ -44,8 +44,9 @@ Options:
 
     More information at https://github.com/Medium/medium-api-docs#creating-a-post
 
-Example:
-    $ meaty-m
+Examples:
+    $ meaty-m --content=new-post.md --title="How to Post a Cool Post" --tags='["dopesauce","awesome"]' --status=draft
+    $ meaty-m --content=new-post-2.md --title="Just Another Cool Post" --format=html --notify
 ```
 
 
