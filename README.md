@@ -11,8 +11,8 @@
 ## Install
 
 ```
-$ curl https://raw.githubusercontent.com/kjbrum/kraken-cli/master/kraken > ~/bin/kraken
-$ chmod +x ~/bin/kraken
+$ curl https://raw.githubusercontent.com/kjbrum/meaty-m/master/meaty-m > ~/bin/meaty-m
+$ chmod +x ~/bin/meaty-m
 ```
 
 
@@ -42,7 +42,7 @@ Options:
     --url=<url>                 The original home of this content, if it was originally published elsewhere
     --user                      Display your author ID
 
-    More information. (https://github.com/Medium/medium-api-docs#creating-a-post)
+    More information at https://github.com/Medium/medium-api-docs#creating-a-post
 
 Example:
     $ meaty-m
@@ -51,15 +51,13 @@ Example:
 
 ## Config
 
-[Find/create your API credentials here.](https://kraken.io/account/api-credentials)
+##### MEATY_M_TOKEN
 
-##### MEATY_M_KEY
-
-Your Medium API key.
+Your Medium integration token. [Find here under "Integration tokens"](https://medium.com/me/settings)
 
 ##### MEATY_M_SECRET
 
-Your Medium API secret.
+Your Medium author ID. Run `meaty-m --user` after installing the script and adding your token.
 
 
 ## License
