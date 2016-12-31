@@ -1,0 +1,170 @@
+#!/usr/bin/env bash
+
+# Meaty-M
+# Easily post articles to Medium.
+#
+# Copyright (C) Kyle Brumm <http://kylebrumm.com>
+
+# Display the help text
+usage() {
+cat <<EOF
+
+Meaty-M
+
+Easily post articles to Medium.
+
+Usage:
+    $ meaty-m <options>
+
+Options:
+    --content=<path/to/file>    The body of the post, in a valid, semantic, HTML fragment, or Markdown (required)
+    --format=<string>           The format of the "content" field (markdown|html) (required)
+    --help                      Display the help text
+    --license=<string>          The license of the post (all-rights-reserved|cc-40-by|cc-40-by-sa|cc-40-by-nd|cc-40-by-nc|cc-40-by-nc-nd|cc-40-by-nc-sa|cc-40-zero|public-domain)
+    --notify                    Whether to notify followers that the post was published
+    --status=<string>           The status of the post (public|draft|unlisted)
+    --tags=<string|array>       Tags to classify the post
+                                    - Only the first three will be used
+                                    - Tags longer than 25 characters will be ignored
+    --title=<string>            The title of the post (required)
+                                    - Used for SEO and when rendering the post as a listing
+                                    - Titles longer than 100 characters will be ignored
+    --url=<url>                 The original home of this content, if it was originally published elsewhere
+    --user                      Display your author ID
+
+    More information. (https://github.com/Medium/medium-api-docs#creating-a-post)
+
+Example:
+    $ meaty-m
+
+EOF
+exit 0
+}
+
+# Check if help info should be displayed
+if [ "$1" = "-h" -o "$1" = "--help" -o -z "$1" ]; then
+    usage
+fi
+
+# Colors
+RED=$(tput setaf 1);
+GREEN=$(tput setaf 2);
+YELLOW=$(tput setaf 3);
+WHITE=$(tput setaf 7);
+RESET=$(tput sgr0);
+
+# Credentials
+[[ -z $MEATY_M_TOKEN ]] && MEATY_M_TOKEN=''
+[[ -z $MEATY_M_AUTHOR_ID ]] && MEATY_M_AUTHOR_ID=''
+
+# Variables
+CONTENT=''
+FILE=''
+FORMAT='markdown'
+IMAGES=''
+LICENSE='all-rights-reserved'
+NOTIFY=false
+STATUS='public'
+TAGS=[]
+TITLE=''
+URL=''
+
+# Check if token exists
+if [ -z "$MEATY_M_TOKEN" ]; then
+    printf "${RED}Error:${WHITE} Unknown token. Make sure you have created an \"Integration Token\" (https://medium.com/me/settings)\n\n"
+    exit 1
+fi
+
+# Parse the options
+for i in "$@"; do
+    case $i in
+        --content=*)
+            FILE="${i#*=}"
+            CONTENT="$(cat $FILE)"
+            shift
+            ;;
+        --format=*)
+            FORMAT="${i#*=}"
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        --images=*)
+            IMAGES="${i#*=}"
+            shift
+            ;;
+        --license=*)
+            LICENSE="${i#*=}"
+            shift
+            ;;
+        --notify)
+            NOTIFY=true
+            shift
+            ;;
+        --status=*)
+            STATUS="${i#*=}"
+            shift
+            ;;
+        --tags=*)
+            TAGS="${i#*=}"
+            shift
+            ;;
+        --title=*)
+            TITLE="${i#*=}"
+            shift
+            ;;
+        --url=*)
+            URL="${i#*=}"
+            shift
+            ;;
+        --user)
+            me=$(curl -s "https://api.medium.com/v1/me" -H "Authorization: Bearer $MEATY_M_TOKEN" -H "Content-type: application/json")
+            printf "${GREEN}Your author ID:${WHITE} $(echo $me | jq -r '.data.id')\n\n"
+            exit 0
+            ;;
+        *)
+            printf "${RED}Error:${WHITE} Illegal task $i (see \"meaty-m --help\" for help)\n\n"
+            exit 1
+            ;;
+    esac
+done
+
+# Check if author ID exists
+if [ -z "$MEATY_M_AUTHOR_ID" ]; then
+    printf "${RED}Error:${WHITE} Unknown author ID. Make sure you have gotten your author ID (\"meaty-m --user\").\n\n"
+    exit 1
+fi
+
+# Display the article info
+printf "\n"
+printf "${GREEN}==> Article information:${WHITE}\n"
+printf "    Content          = ${FILE}\n"
+printf "    Format           = ${FORMAT}\n"
+printf "    License          = ${LICENSE}\n"
+printf "    Notify followers = ${NOTIFY}\n"
+printf "    Status           = ${STATUS}\n"
+printf "    Tags             = ${TAGS}\n"
+printf "    License          = ${LICENSE}\n"
+printf "    Title            = ${TITLE}\n"
+printf "    URL              = ${URL}\n"
+printf "\n"
+
+# Check if we should post the article
+while true; do
+    read -ep "Everything look good? Post the article(y/n): " post
+    case $post in
+        [Nn]* )
+            printf "\nSkipping, article not posted...\n\n"
+            break;;
+        [Yy]* )
+            # Build the data string
+            data='{"canonicalUrl": "'$URL'", "content": "'$CONTENT'", "contentFormat": "'$FORMAT'", "license": "'$LICENSE'", "notifyFollowers": '$NOTIFY' "publishStatus": "'$STATUS'", "tags": '$TAGS', "title": "'$TITLE'"}'
+
+            # Post the article
+            response=$(curl -s -X POST "https://api.medium.com/v1/users/$MEATY_M_AUTHOR_ID/posts" -H "Host: api.medium.com" -H "Authorization: Bearer $MEATY_M_TOKEN" -H "Content-type: application/json" -H "Accept: application/json" -H "Accept-Charset: utf-8" -d "$data")
+
+            echo $response
+            break;;
+    esac
+done
