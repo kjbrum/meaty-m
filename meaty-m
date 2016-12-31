@@ -81,6 +81,7 @@ for i in "$@"; do
         --content=*)
             FILE="${i#*=}"
             CONTENT="$(cat $FILE)"
+            CONTENT=$(printf "%q " $CONTENT)
             shift
             ;;
         --format=*)
@@ -159,7 +160,7 @@ while true; do
             break;;
         [Yy]* )
             # Build the data string
-            data='{"canonicalUrl": "'$URL'", "content": "'$CONTENT'", "contentFormat": "'$FORMAT'", "license": "'$LICENSE'", "notifyFollowers": '$NOTIFY' "publishStatus": "'$STATUS'", "tags": '$TAGS', "title": "'$TITLE'"}'
+            data='{"canonicalUrl": "'$URL'", "content": "'$CONTENT'", "contentFormat": "'$FORMAT'", "license": "'$LICENSE'", "notifyFollowers": '$NOTIFY', "publishStatus": "'$STATUS'", "tags": '$TAGS', "title": "'$TITLE'"}'
 
             # Post the article
             response=$(curl -s -X POST "https://api.medium.com/v1/users/$MEATY_M_AUTHOR_ID/posts" -H "Host: api.medium.com" -H "Authorization: Bearer $MEATY_M_TOKEN" -H "Content-type: application/json" -H "Accept: application/json" -H "Accept-Charset: utf-8" -d "$data")
