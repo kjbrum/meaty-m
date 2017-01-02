@@ -36,7 +36,7 @@ Options:
 
 Examples:
     $ meaty-m --content=new-post.md --title="How to Post a Cool Post" --tags='["dopesauce","awesome"]' --status=draft
-    $ meaty-m --content=new-post-2.md --title="Just Another Cool Post" --format=html --notify
+    $ meaty-m --content="<h1>Making Another Cool Article</h1>" --title="Making Another Cool Article" --format=html --notify
 
 EOF
 exit 0
