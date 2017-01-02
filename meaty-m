@@ -129,7 +129,11 @@ for i in "$@"; do
             ;;
         --user)
             me=$(curl -s "https://api.medium.com/v1/me" -H "Authorization: Bearer $MEATY_M_TOKEN" -H "Content-type: application/json")
-            printf "${GREEN}Your author ID:${WHITE} $(echo $me | jq -r '.data.id')\n\n"
+
+            # Get the author id
+            id=$(echo $me | cut -d':' -f3 | cut -d',' -f1 | xargs)
+
+            printf "${GREEN}Your author ID:${WHITE} ${id}\n\n"
             exit 0
             ;;
         *)

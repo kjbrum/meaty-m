@@ -3,11 +3,6 @@
 > Easily post articles to Medium.
 
 
-## Dependencies
-
-- [jq](https://stedolan.github.io/jq) - Used to parse JSON responses.
-
-
 ## Install
 
 ```
