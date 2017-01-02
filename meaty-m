@@ -168,7 +168,7 @@ while true; do
             data='{"canonicalUrl": "'$URL'", "content": "'$CONTENT'", "contentFormat": "'$FORMAT'", "license": "'$LICENSE'", "notifyFollowers": '$NOTIFY', "publishStatus": "'$STATUS'", "tags": '$TAGS', "title": "'$TITLE'"}'
 
             # Post the article
-            response=$(curl -s -X POST "https://api.medium.com/v1/users/$MEATY_M_AUTHOR_ID/posts" -H "Host: api.medium.com" -H "Authorization: Bearer $MEATY_M_TOKEN" -H "Content-type: application/json" -H "Accept-Charset: utf-8" -d "$data")
+            response=$(curl -s -X POST "https://api.medium.com/v1/users/$MEATY_M_AUTHOR_ID/posts" -H "Host: api.medium.com" -H "Authorization: Bearer $MEATY_M_TOKEN" -H "Content-type: application/json" -H "Accept: application/json" -H "Accept-Charset: utf-8" -d "$data")
 
             echo $response
             break;;
